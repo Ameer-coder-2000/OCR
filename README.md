@@ -1,6 +1,6 @@
 # Gilig System
 
-Gilig System is a PHP/MySQL web application built for local use on XAMPP. It includes admin management, user authentication, OCR image-to-text extraction, and profile/dashboard pages.
+Gilig System is a PHP/MySQL web application for OCR text extraction on XAMPP. It lets users upload images and automatically extract text from them, combining image processing and OCR technology to turn printed or handwritten content into editable, searchable text.
 
 ## Project Structure
 
@@ -14,20 +14,12 @@ Gilig System is a PHP/MySQL web application built for local use on XAMPP. It inc
   - `user/profile.php` - User profile page.
   - `user/logout.php` - Log out the current user.
   - `user/uploads/` - Folder for uploaded user files.
-- `admin/` - Admin section.
-  - `admin/index.php` - Admin login page.
-  - `admin/dashboard.php` - Admin dashboard.
-  - `admin/profile.php` - Admin profile page.
-  - `admin/change_credentials.php` - Admin credential management.
-  - `admin/logout.php` - Admin logout.
-  - `admin/verify_email.php` - Admin password verification/change page.
 
 ## Features
 
 - User login and session handling.
 - OCR text extraction using uploaded image files.
 - Responsive mobile-friendly OCR page design.
-- Admin interface separate from user side.
 - Simple local XAMPP deployment.
 
 ## Requirements
@@ -49,9 +41,9 @@ Gilig System is a PHP/MySQL web application built for local use on XAMPP. It inc
 
 - The root page now redirects directly to the OCR interface.
 - `user/index.php` also redirects to `user/ocr.php`.
-- The OCR page is styled for a cleaner, water-inspired mobile UI.
 - Runtime uploads in `user/uploads/` are ignored by Git except for `default.png`, which is the bundled placeholder avatar used by the sample data.
-- If you want to restore the traditional login page, you can add it back in `user/index.php`.
+- If you want to restore a traditional login page or admin area, you can add those pages back in later.
+- The project is intended for local XAMPP use.
 
 ## Developer
 
@@ -62,4 +54,3 @@ Gilig System is a PHP/MySQL web application built for local use on XAMPP. It inc
 - If the page shows a redirect error, clear your browser cache and cookies.
 - Make sure the `user/index.php` and `index.php` files exist in the correct folder.
 - Ensure `db.php` contains the correct MySQL credentials for your XAMPP setup.
-
