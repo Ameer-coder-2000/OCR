@@ -1,9 +1,8 @@
-# Ignore runtime upload files but keep the bundled default avatar
-user/uploads/*
-!user/uploads/default.png
-
 # Local environment overrides
 .env
+.env.*
+.vercel/
+node_modules/
 
 # OS/editor clutter
 .DS_Store

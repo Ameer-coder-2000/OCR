@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gilig OCR is a static, Vercel-friendly OCR tool that extracts text from uploaded images in the browser.">
+    <meta name="theme-color" content="#0f766e">
+    <title>Gilig OCR</title>
+    <link rel="icon" type="image/png" href="ocr.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #eef7fb;
+            --bg-deep: #dbeff7;
+            --surface: rgba(255, 255, 255, 0.82);
+            --surface-strong: rgba(255, 255, 255, 0.94);
+            --text: #0f172a;
+            --muted: #64748b;
+            --line: rgba(15, 23, 42, 0.12);
+            --primary: #0891b2;
+            --primary-2: #14b8a6;
+            --primary-dark: #0e7490;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --shadow: 0 24px 70px rgba(15, 23, 42, 0.16);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(20, 184, 166, 0.24), transparent 22%),
+                radial-gradient(circle at top right, rgba(8, 145, 178, 0.18), transparent 26%),
+                radial-gradient(circle at bottom center, rgba(15, 118, 110, 0.12), transparent 30%),
+                linear-gradient(180deg, #f6fbff 0%, var(--bg) 40%, #ffffff 100%);
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: auto;
+            pointer-events: none;
+            border-radius: 999px;
+            filter: blur(18px);
+            opacity: 0.55;
+            z-index: 0;
+        }
+
+        body::before {
+            width: 240px;
+            height: 240px;
+            right: -60px;
+            top: 110px;
+            background: rgba(20, 184, 166, 0.18);
+        }
+
+        body::after {
+            width: 300px;
+            height: 300px;
+            left: -120px;
+            bottom: 70px;
+            background: rgba(8, 145, 178, 0.14);
+        }
+
+        .shell {
+            position: relative;
+            z-index: 1;
+            width: min(1180px, calc(100% - 24px));
+            margin: 18px auto 28px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+            gap: 22px;
+            align-items: stretch;
+            padding: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 32px;
+            color: white;
+            background:
+                linear-gradient(135deg, rgba(12, 74, 110, 0.98), rgba(8, 145, 178, 0.88)),
+                linear-gradient(135deg, rgba(20, 184, 166, 0.85), rgba(14, 165, 233, 0.75));
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 10% 18%, rgba(255, 255, 255, 0.18), transparent 16%),
+                radial-gradient(circle at 82% 22%, rgba(255, 255, 255, 0.12), transparent 18%),
+                radial-gradient(circle at 90% 85%, rgba(255, 255, 255, 0.08), transparent 20%);
+            pointer-events: none;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .brand img {
+            width: 52px;
+            height: 52px;
+            object-fit: cover;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.94);
+            padding: 6px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.24);
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: rgba(255, 255, 255, 0.92);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            width: fit-content;
+        }
+
+        .hero h1 {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: clamp(2.2rem, 4vw, 4.2rem);
+            line-height: 0.96;
+            letter-spacing: -0.05em;
+            max-width: 10.5ch;
+        }
+
+        .hero p {
+            position: relative;
+            z-index: 1;
+            margin: 16px 0 0;
+            max-width: 62ch;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .hero-side {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 14px;
+            align-content: start;
+        }
+
+        .info-card {
+            padding: 18px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(12px);
+        }
+
+        .info-card h2 {
+            margin: 0 0 10px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+
+        .steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .steps li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        .steps span {
+            width: 26px;
+            height: 26px;
+            border-radius: 9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-weight: 800;
+            flex: none;
+        }
+
+        .info-card.note {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .info-card.note strong {
+            display: block;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .info-card.note p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+            gap: 22px;
+            margin-top: 22px;
+        }
+
+        .panel {
+            background: var(--surface);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            padding: 22px;
+        }
+
+        .panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .panel h2 {
+            margin: 0;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 1.45rem;
+            letter-spacing: -0.03em;
+        }
+
+        .panel p.subtle {
+            margin: 6px 0 0;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 0.96rem;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            white-space: nowrap;
+            background: rgba(15, 23, 42, 0.08);
+            color: var(--muted);
+        }
+
+        .status::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: currentColor;
+            opacity: 0.85;
+        }
+
+        .status[data-tone="ready"] {
+            background: rgba(8, 145, 178, 0.12);
+            color: #0369a1;
+        }
+
+        .status[data-tone="loading"] {
+            background: rgba(217, 119, 6, 0.12);
+            color: #b45309;
+        }
+
+        .status[data-tone="success"] {
+            background: rgba(5, 150, 105, 0.14);
+            color: #047857;
+        }
+
+        .status[data-tone="warn"] {
+            background: rgba(217, 119, 6, 0.14);
+            color: #b45309;
+        }
+
+        .status[data-tone="error"] {
+            background: rgba(220, 38, 38, 0.12);
+            color: #b91c1c;
+        }
+
+        .dropzone {
+            display: grid;
+            gap: 14px;
+            align-content: center;
+            justify-items: center;
+            text-align: center;
+            min-height: 320px;
+            padding: 18px;
+            border-radius: 24px;
+            border: 1.5px dashed rgba(8, 145, 178, 0.35);
+            background: linear-gradient(180deg, rgba(8, 145, 178, 0.08), rgba(20, 184, 166, 0.04));
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .dropzone:hover,
+        .dropzone.dragover {
+            border-color: var(--primary-2);
+            transform: translateY(-2px);
+            background: linear-gradient(180deg, rgba(8, 145, 178, 0.12), rgba(20, 184, 166, 0.08));
+        }
+
+        .dropzone input {
+            display: none;
+        }
+
+        .dropzone-icon {
+            width: 76px;
+            height: 76px;
+            border-radius: 22px;
+            padding: 10px;
+            background: var(--surface-strong);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
+        }
+
+        .dropzone-icon img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        .dropzone strong {
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .dropzone p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .file-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.06);
+            color: var(--text);
+            font-size: 0.88rem;
+            font-weight: 700;
+            max-width: 100%;
+            word-break: break-word;
+        }
+
+        .preview {
+            margin-top: 16px;
+            border-radius: 22px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            background: white;
+            display: none;
+        }
+
+        .preview img {
+            display: block;
+            width: 100%;
+            max-height: 280px;
+            object-fit: contain;
+            background: #0f172a;
+        }
+
+        .preview-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 12px 14px;
+            color: var(--muted);
+            font-size: 0.86rem;
+            background: rgba(15, 23, 42, 0.03);
+        }
+
+        .controls,
+        .output-tools {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        button {
+            appearance: none;
+            border: none;
+            border-radius: 16px;
+            padding: 13px 18px;
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            box-shadow: 0 14px 30px rgba(8, 145, 178, 0.22);
+        }
+
+        .btn-secondary {
+            color: var(--text);
+            background: rgba(15, 23, 42, 0.08);
+        }
+
+        .btn-ghost {
+            color: var(--muted);
+            background: transparent;
+            border: 1px solid var(--line);
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            border: 3px solid rgba(8, 145, 178, 0.18);
+            border-top-color: currentColor;
+            animation: spin 0.8s linear infinite;
+            flex: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .output-box {
+            display: grid;
+            gap: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 460px;
+            resize: none;
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 18px;
+            color: var(--text);
+            font: inherit;
+            font-size: 0.96rem;
+            line-height: 1.7;
+            outline: none;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+        }
+
+        textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        .char-count {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--muted);
+            font-size: 0.88rem;
+            flex-wrap: wrap;
+        }
+
+        .footer {
+            margin: 18px 4px 0;
+            padding: 8px 4px 0;
+            color: var(--muted);
+            text-align: center;
+            font-size: 0.92rem;
+        }
+
+        .toast {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 10;
+            min-width: min(360px, calc(100vw - 36px));
+            max-width: 420px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            color: white;
+            background: #0f172a;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #047857, #0f766e);
+        }
+
+        .toast.warn {
+            background: linear-gradient(135deg, #b45309, #d97706);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #b91c1c, #ef4444);
+        }
+
+        .fineprint {
+            margin: 14px 2px 0;
+            color: var(--muted);
+            font-size: 0.86rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 960px) {
+            .hero,
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+
+            textarea {
+                min-height: 340px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .shell {
+                width: calc(100% - 16px);
+                margin: 8px auto 18px;
+            }
+
+            .hero,
+            .panel {
+                border-radius: 24px;
+                padding: 18px;
+            }
+
+            .hero h1 {
+                max-width: 100%;
+            }
+
+            .dropzone {
+                min-height: 270px;
+            }
+
+            .controls,
+            .output-tools {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .toast {
+                right: 12px;
+                bottom: 12px;
+                min-width: calc(100vw - 24px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <section class="hero">
+            <div>
+                <div class="brand">
+                    <img src="ocr.png" alt="Gilig OCR logo">
+                    <div>
+                        <div class="eyebrow">Vercel-ready static build</div>
+                    </div>
+                </div>
+
+                <h1>OCR that works on Vercel without PHP.</h1>
+                <p>
+                    Upload an image, send it straight to OCR.space from the browser, and copy or download the extracted text immediately.
+                    This version replaces the old PHP redirect flow so the site opens cleanly as a static deployment.
+                </p>
+
+                <div class="hero-actions">
+                    <span class="chip">No PHP runtime</span>
+                    <span class="chip">Browser upload</span>
+                    <span class="chip">Mobile friendly</span>
+                </div>
+            </div>
+
+            <div class="hero-side">
+                <div class="info-card">
+                    <h2>How it works</h2>
+                    <ul class="steps">
+                        <li><span>1</span><div>Choose an image from your device or drag it into the upload box.</div></li>
+                        <li><span>2</span><div>The browser posts it to OCR.space using the public test key.</div></li>
+                        <li><span>3</span><div>Copy the result, or download it as a plain text file.</div></li>
+                    </ul>
+                </div>
+
+                <div class="info-card note">
+                    <strong>Important</strong>
+                    <p>
+                        Vercel does not execute PHP files, so the old `index.php` redirect was the reason your site downloaded a file.
+                        This page is built to serve directly as `index.html`.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <main class="app-grid">
+            <section class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Upload image</h2>
+                        <p class="subtle">PNG, JPG, GIF, and BMP are supported. Large files may take longer to process.</p>
+                    </div>
+                    <span class="status" id="uploadStatus" data-tone="idle">Waiting for image</span>
+                </div>
+
+                <label class="dropzone" id="dropzone" for="fileInput">
+                    <input type="file" id="fileInput" accept="image/*">
+                    <div class="dropzone-icon" aria-hidden="true">
+                        <img src="ocr.png" alt="">
+                    </div>
+                    <strong>Drop an image here or click to choose</strong>
+                    <p>Use the same OCR engine from the browser, no server-side PHP needed.</p>
+                    <div class="file-pill" id="fileLabel">No file selected</div>
+                </label>
+
+                <div class="preview" id="previewWrap" aria-hidden="true">
+                    <img id="previewImage" alt="Selected image preview">
+                    <div class="preview-meta">
+                        <span id="previewName">Preview</span>
+                        <span id="previewSize">Ready for OCR</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button type="button" class="btn-primary" id="extractBtn" disabled>Extract text</button>
+                    <button type="button" class="btn-secondary" id="clearBtn">Clear</button>
+                </div>
+
+                <div class="loading" id="loadingRow">
+                    <div class="spinner" aria-hidden="true"></div>
+                    <span>Sending the image to OCR.space...</span>
+                </div>
+
+                <p class="fineprint">
+                    The demo uses OCR.space's public <code>helloworld</code> key. Replace it in the script if you want your own key or higher limits.
+                </p>
+            </section>
+
+            <section class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Extracted text</h2>
+                        <p class="subtle">Your OCR result appears here once the request completes.</p>
+                    </div>
+                    <span class="status" id="resultStatus" data-tone="idle">Idle</span>
+                </div>
+
+                <div class="output-box">
+                    <textarea id="outputText" placeholder="Upload an image to extract text..." readonly spellcheck="false"></textarea>
+                    <div class="char-count">
+                        <span id="charCount">0 characters</span>
+                        <span>Powered by OCR.space</span>
+                    </div>
+                </div>
+
+                <div class="output-tools">
+                    <button type="button" class="btn-ghost" id="copyBtn" disabled>Copy text</button>
+                    <button type="button" class="btn-ghost" id="downloadBtn" disabled>Download .txt</button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            Gilig OCR is now a static Vercel build. Old PHP URLs redirect to this page.
+        </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+        const API_ENDPOINT = "https://api.ocr.space/parse/image";
+        const API_KEY = "helloworld";
+        const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+        const dropzone = document.getElementById("dropzone");
+        const fileInput = document.getElementById("fileInput");
+        const fileLabel = document.getElementById("fileLabel");
+        const previewWrap = document.getElementById("previewWrap");
+        const previewImage = document.getElementById("previewImage");
+        const previewName = document.getElementById("previewName");
+        const previewSize = document.getElementById("previewSize");
+        const outputText = document.getElementById("outputText");
+        const extractBtn = document.getElementById("extractBtn");
+        const clearBtn = document.getElementById("clearBtn");
+        const copyBtn = document.getElementById("copyBtn");
+        const downloadBtn = document.getElementById("downloadBtn");
+        const loadingRow = document.getElementById("loadingRow");
+        const toast = document.getElementById("toast");
+        const uploadStatus = document.getElementById("uploadStatus");
+        const resultStatus = document.getElementById("resultStatus");
+        const charCount = document.getElementById("charCount");
+
+        let selectedFile = null;
+        let previewUrl = "";
+        let toastTimer = null;
+
+        function formatBytes(bytes) {
+            if (!Number.isFinite(bytes)) return "";
+            if (bytes === 0) return "0 B";
+            const units = ["B", "KB", "MB", "GB"];
+            const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+            const value = bytes / Math.pow(1024, index);
+            return `${value.toFixed(value >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
+        }
+
+        function setStatus(el, label, tone) {
+            el.textContent = label;
+            el.dataset.tone = tone;
+        }
+
+        function showToast(message, tone = "success") {
+            toast.textContent = message;
+            toast.className = `toast ${tone}`;
+            toast.classList.add("show");
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2800);
+        }
+
+        function setBusy(isBusy) {
+            loadingRow.style.display = isBusy ? "flex" : "none";
+            extractBtn.disabled = isBusy || !selectedFile;
+            clearBtn.disabled = isBusy;
+            fileInput.disabled = isBusy;
+            dropzone.style.pointerEvents = isBusy ? "none" : "auto";
+            extractBtn.textContent = isBusy ? "Extracting..." : "Extract text";
+        }
+
+        function updateCharCount() {
+            const value = outputText.value.trim();
+            charCount.textContent = `${value.length} character${value.length === 1 ? "" : "s"}`;
+            copyBtn.disabled = !value;
+            downloadBtn.disabled = !value;
+        }
+
+        function updateOutput(text) {
+            outputText.value = text;
+            updateCharCount();
+        }
+
+        function clearPreview() {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+                previewUrl = "";
+            }
+            previewWrap.style.display = "none";
+            previewWrap.setAttribute("aria-hidden", "true");
+        }
+
+        function selectFile(file) {
+            if (!file) return;
+
+            if (!file.type.startsWith("image/")) {
+                selectedFile = null;
+                extractBtn.disabled = true;
+                fileInput.value = "";
+                fileLabel.textContent = "No file selected";
+                updateOutput("");
+                clearPreview();
+                setStatus(uploadStatus, "Choose an image", "warn");
+                setStatus(resultStatus, "Idle", "idle");
+                showToast("Please choose a valid image file.", "warn");
+                return;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                selectedFile = null;
+                extractBtn.disabled = true;
+                fileInput.value = "";
+                fileLabel.textContent = "No file selected";
+                updateOutput("");
+                clearPreview();
+                setStatus(uploadStatus, "File too large", "warn");
+                setStatus(resultStatus, "Idle", "idle");
+                showToast("The image is larger than 5 MB.", "warn");
+                return;
+            }
+
+            selectedFile = file;
+            fileLabel.textContent = `${file.name} • ${formatBytes(file.size)}`;
+            previewName.textContent = file.name;
+            previewSize.textContent = formatBytes(file.size);
+            updateOutput("");
+
+            clearPreview();
+            previewUrl = URL.createObjectURL(file);
+            previewImage.src = previewUrl;
+            previewWrap.style.display = "block";
+            previewWrap.setAttribute("aria-hidden", "false");
+
+            setStatus(uploadStatus, "Ready to extract", "ready");
+            setStatus(resultStatus, "Ready", "ready");
+            extractBtn.disabled = false;
+            showToast("Image loaded and ready.", "success");
+        }
+
+        function clearAll() {
+            selectedFile = null;
+            fileInput.value = "";
+            fileLabel.textContent = "No file selected";
+            updateOutput("");
+            clearPreview();
+            setStatus(uploadStatus, "Waiting for image", "idle");
+            setStatus(resultStatus, "Idle", "idle");
+            extractBtn.disabled = true;
+            copyBtn.disabled = true;
+            downloadBtn.disabled = true;
+            loadingRow.style.display = "none";
+            extractBtn.textContent = "Extract text";
+            fileInput.disabled = false;
+            dropzone.style.pointerEvents = "auto";
+            showToast("Selection cleared.", "success");
+        }
+
+        function extractApiMessage(data) {
+            const messages = [];
+
+            if (Array.isArray(data?.ErrorMessage)) {
+                messages.push(...data.ErrorMessage.filter(Boolean));
+            } else if (typeof data?.ErrorMessage === "string" && data.ErrorMessage.trim()) {
+                messages.push(data.ErrorMessage.trim());
+            }
+
+            if (typeof data?.ErrorDetails === "string" && data.ErrorDetails.trim()) {
+                messages.push(data.ErrorDetails.trim());
+            }
+
+            return messages.join(" ").trim() || "OCR service returned an unexpected response.";
+        }
+
+        async function runOcr() {
+            if (!selectedFile) {
+                showToast("Choose an image first.", "warn");
+                setStatus(uploadStatus, "Choose an image", "warn");
+                return;
+            }
+
+            try {
+                setBusy(true);
+                setStatus(resultStatus, "Processing", "loading");
+
+                const formData = new FormData();
+                formData.append("apikey", API_KEY);
+                formData.append("language", "eng");
+                formData.append("isOverlayRequired", "false");
+                formData.append("OCREngine", "2");
+                formData.append("file", selectedFile);
+
+                const response = await fetch(API_ENDPOINT, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`OCR service returned HTTP ${response.status}.`);
+                }
+
+                const data = await response.json();
+                const apiError = extractApiMessage(data);
+
+                if (data?.IsErroredOnProcessing || data?.OCRExitCode !== 1) {
+                    throw new Error(apiError);
+                }
+
+                const parsedText = (data?.ParsedResults?.[0]?.ParsedText || "").trim();
+
+                if (!parsedText) {
+                    updateOutput("");
+                    setStatus(resultStatus, "No text found", "warn");
+                    showToast("No text was detected in that image.", "warn");
+                    return;
+                }
+
+                updateOutput(parsedText);
+                setStatus(resultStatus, "Text extracted", "success");
+                showToast("OCR completed successfully.", "success");
+            } catch (error) {
+                updateOutput("");
+                setStatus(resultStatus, "Extraction failed", "error");
+                showToast(error.message || "OCR request failed.", "error");
+            } finally {
+                setBusy(false);
+            }
+        }
+
+        async function copyText() {
+            const value = outputText.value.trim();
+            if (!value) return;
+
+            try {
+                await navigator.clipboard.writeText(value);
+                showToast("Text copied to clipboard.", "success");
+            } catch (error) {
+                showToast("Copy failed. Please copy manually.", "warn");
+            }
+        }
+
+        function downloadText() {
+            const value = outputText.value.trim();
+            if (!value) return;
+
+            const blob = new Blob([value], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement("a");
+
+            anchor.href = url;
+            anchor.download = "extracted-text.txt";
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast("Text file downloaded.", "success");
+        }
+
+        dropzone.addEventListener("dragenter", (event) => {
+            event.preventDefault();
+            dropzone.classList.add("dragover");
+        });
+
+        dropzone.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            dropzone.classList.add("dragover");
+        });
+
+        dropzone.addEventListener("dragleave", (event) => {
+            event.preventDefault();
+            dropzone.classList.remove("dragover");
+        });
+
+        dropzone.addEventListener("drop", (event) => {
+            event.preventDefault();
+            dropzone.classList.remove("dragover");
+
+            const file = event.dataTransfer?.files?.[0];
+            if (file) {
+                selectFile(file);
+            }
+        });
+
+        fileInput.addEventListener("change", (event) => {
+            const file = event.target.files?.[0];
+            if (file) {
+                selectFile(file);
+            }
+        });
+
+        extractBtn.addEventListener("click", runOcr);
+        clearBtn.addEventListener("click", clearAll);
+        copyBtn.addEventListener("click", copyText);
+        downloadBtn.addEventListener("click", downloadText);
+
+        updateCharCount();
+        setStatus(uploadStatus, "Waiting for image", "idle");
+        setStatus(resultStatus, "Idle", "idle");
+    </script>
+</body>
+</html>
