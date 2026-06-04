@@ -1,0 +1,12 @@
+# Ignore runtime upload files but keep the bundled default avatar
+user/uploads/*
+!user/uploads/default.png
+
+# Local environment overrides
+.env
+
+# OS/editor clutter
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
