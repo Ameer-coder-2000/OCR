@@ -238,18 +238,45 @@
             flex: none;
         }
 
-        .info-card.note {
-            background: rgba(255, 255, 255, 0.18);
+        .info-card.tips {
+            background: rgba(255, 255, 255, 0.16);
         }
 
-        .info-card.note strong {
+        .info-card.tips strong {
             display: block;
             font-family: "Space Grotesk", sans-serif;
             font-size: 1.05rem;
             margin-bottom: 8px;
         }
 
-        .info-card.note p {
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .tips-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.92);
+            line-height: 1.55;
+        }
+
+        .tips-list li::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            margin-top: 7px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55));
+            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08);
+            flex: none;
+        }
+
+        .info-card.tips p {
             margin: 0;
             color: rgba(255, 255, 255, 0.92);
         }
@@ -648,20 +675,19 @@
                 <div class="brand">
                     <img src="ocr.png" alt="Gilig OCR logo">
                     <div>
-                        <div class="eyebrow">Vercel-ready static build</div>
+                        <div class="eyebrow">Static OCR app</div>
                     </div>
                 </div>
 
-                <h1>OCR that works on Vercel without PHP.</h1>
+                <h1>OCR that feels instant on Vercel.</h1>
                 <p>
                     Upload an image, send it straight to OCR.space from the browser, and copy or download the extracted text immediately.
-                    This version replaces the old PHP redirect flow so the site opens cleanly as a static deployment.
                 </p>
 
                 <div class="hero-actions">
-                    <span class="chip">No PHP runtime</span>
+                    <span class="chip">Static hosting</span>
                     <span class="chip">Browser upload</span>
-                    <span class="chip">Mobile friendly</span>
+                    <span class="chip">Copy &amp; download</span>
                 </div>
             </div>
 
@@ -675,12 +701,13 @@
                     </ul>
                 </div>
 
-                <div class="info-card note">
-                    <strong>Important</strong>
-                    <p>
-                        Vercel does not execute PHP files, so the old `index.php` redirect was the reason your site downloaded a file.
-                        This page is built to serve directly as `index.html`.
-                    </p>
+                <div class="info-card tips">
+                    <strong>Best results</strong>
+                    <ul class="tips-list">
+                        <li>Use a sharp image with strong text contrast.</li>
+                        <li>Crop out extra margins before uploading.</li>
+                        <li>Copy the text or save it as a `.txt` file.</li>
+                    </ul>
                 </div>
             </div>
         </section>
@@ -701,7 +728,7 @@
                         <img src="ocr.png" alt="">
                     </div>
                     <strong>Drop an image here or click to choose</strong>
-                    <p>Use the same OCR engine from the browser, no server-side PHP needed.</p>
+                    <p>Files go straight from your browser to OCR.space with instant preview before extraction.</p>
                     <div class="file-pill" id="fileLabel">No file selected</div>
                 </label>
 
@@ -753,7 +780,7 @@
         </main>
 
         <footer class="footer">
-            Gilig OCR is now a static Vercel build. Old PHP URLs redirect to this page.
+            Gilig OCR is optimized for static hosting and mobile screens.
         </footer>
     </div>
 

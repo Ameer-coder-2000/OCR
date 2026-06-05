@@ -1,14 +1,12 @@
 # Gilig OCR
 
-Gilig OCR is now a static, Vercel-friendly OCR demo. Upload an image in the browser and it sends the file directly to OCR.space for text extraction.
-
-The old PHP and MySQL files were removed because Vercel does not execute PHP. This version serves as a clean static site with a redirect setup for the old `.php` URLs.
+Gilig OCR is a static OCR demo built for Vercel. Upload an image in the browser and it sends the file directly to OCR.space for text extraction.
 
 ## What is included
 
 - `index.html` - The live OCR app.
 - `ocr.png` - Project logo and favicon.
-- `vercel.json` - Redirects old PHP paths to the new static app.
+- `vercel.json` - Friendly redirects for legacy paths.
 
 ## How it works
 
@@ -25,6 +23,6 @@ The old PHP and MySQL files were removed because Vercel does not execute PHP. Th
 
 ## Notes
 
-- Old PHP paths like `index.php` and `user/ocr.php` now redirect to `/`.
-- The project no longer depends on PHP, MySQL, or XAMPP.
 - The app is fully usable from the root URL on Vercel.
+- The UI is optimized for mobile and desktop screens.
+- Replace the demo key in `index.html` if you need your own OCR.space limits.
